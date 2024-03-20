@@ -1,4 +1,4 @@
-import jsonwebtoken from 'jsonwebtoken';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 
@@ -7,6 +7,10 @@ dotenv.config()
 const saltRounds = 10;
 const secret = process.env.JWT_SECRET;
 
+
+if (!secret) {
+    throw new Error("JWT_SECRET is not defined in .env file");
+}
 
 export const generateToken = (payload: any) => {
     return jsonwebtoken.sign(payload, secret!, { expiresIn: '1h', algorithm: 'HS256' });
@@ -18,6 +22,14 @@ export const verifyToken = (token: string) => {
 
 export const decodeToken = (token: string) => {
     return jsonwebtoken.decode(token);
+};
+
+export const isTokenExpired = (token: string) => {
+    const decoded = decodeToken(token) as JwtPayload;
+    if (decoded && decoded.exp) {
+        return decoded.exp < Date.now() / 1000;
+    }
+    return true;
 };
 
 export const getTokenFromHeaders = (headers: any) => {
@@ -42,6 +54,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     const isMatch = await bcrypt.compare(password, hashedPassword);
+    console.log(isMatch);
     return isMatch;
 }
   
