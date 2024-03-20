@@ -4,7 +4,11 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import {createConnection} from './db/dbConfig';
+import {createConnectionDB} from './db/DbConfig';
+import router from './routers/Router';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const app = express();
 
@@ -26,4 +30,6 @@ server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-createConnection();
+createConnectionDB();
+
+app.use('/', router())
