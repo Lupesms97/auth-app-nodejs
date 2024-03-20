@@ -1,6 +1,6 @@
-import { createUser, getUserByEmail } from "../db/users";
-import { ResponseDto } from "../dto/ResponseDtoI";
-import { generateRadomSalt, hashPassword } from "../helpers/TokenHelper"
+import { createUser, getUserByEmail } from "../../db/UsersDb";
+import { ResponseDto } from "../models/ResponseDtoI";
+import { generateRadomSalt, hashPassword } from "../../helpers/TokenHelper"
 
 
 async function serviceRegister(email: string, password: string, username: string): Promise<ResponseDto>{

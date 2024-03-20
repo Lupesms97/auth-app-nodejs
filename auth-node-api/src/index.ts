@@ -4,8 +4,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import {createConnectionDB} from './db/DbConfig';
-import router from './routers/Router';
+import {createConnectionDB} from './config/DbConfig';
+import router from './api/routers/Router';
 import dotenv from 'dotenv'
 
 dotenv.config()

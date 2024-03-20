@@ -1,5 +1,5 @@
 import express from "express";
-import { ResponseDto } from "../dto/ResponseDtoI";
+import { ResponseDto } from "../models/ResponseDtoI";
 
 
 const autService = require('../services/authenticationService')
