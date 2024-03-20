@@ -1,5 +1,6 @@
 export interface ResponseDto{
     status?:string,
     message: string
-    error: boolean
+    error: boolean,
+    token?: string
 }
