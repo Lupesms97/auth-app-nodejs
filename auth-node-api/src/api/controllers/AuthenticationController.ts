@@ -41,6 +41,11 @@ export const login = async (req: express.Request, res : express.Response) => {
             message: serviceResponse.message,
             token: serviceResponse.token || ''
         };
+
+        if(serviceResponse.status === '200'){
+            res.cookie('_tk_ur', serviceResponse.token, { domain: 'localhost',path:'/', httpOnly: true });
+        }
+
         res.status(Number(response.status)).json(response);
         
     } catch (error:any) {
