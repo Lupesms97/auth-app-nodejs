@@ -20,7 +20,7 @@ export const getUserByEmail = (email: string) => UserModel.findOne({email});
 
 export const getUserBySessionToken = (sessionToken: string) => 
     UserModel.findOne({'authentication.sessionToken': sessionToken});
-
+    
 export const createUser = (values: Record<string, any>) => 
     new UserModel(values).save()
     .then((user) => user.toObject());
@@ -29,4 +29,13 @@ export const updateUser = (id: string, values: Record<string, any>) =>
     UserModel.findByIdAndUpdate(id, values, {new: true})
 
 export const deleteUserById = (id: string) => UserModel.findByIdAndDelete({_id : id});
-   
+
+export const updateOne = (filter: Record<string, any>, values: Record<string, any>) =>
+    UserModel.updateOne(filter, values);
+
+export const getPasswordByUserEmail = (email: string) => UserModel.findOne({email}, 'authentication.password');
+
+export const getSessionTokenByUserEmail = (email: string) => UserModel.findOne({email}, 'authentication.sessionToken');
+
+export const getCredentials = (email: string) => UserModel.findOne({email}, 'authentication.password authentication.salt authentication.sessionToken');
+    
