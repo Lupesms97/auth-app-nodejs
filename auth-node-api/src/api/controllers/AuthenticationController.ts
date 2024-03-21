@@ -38,7 +38,8 @@ export const login = async (req: express.Request, res : express.Response) => {
         const response: ResponseDto = {
             status: serviceResponse.status,
             error: serviceResponse.error,
-            message: serviceResponse.message
+            message: serviceResponse.message,
+            token: serviceResponse.token || ''
         };
         res.status(Number(response.status)).json(response);
         

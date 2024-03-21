@@ -1,4 +1,4 @@
-import { createUser, getUserByEmail, updateUser,updateOne, findOne} from "../../db/UsersDb";
+import { createUser, getUserByEmail, updateUser,updateOne,getPasswordByUserEmail,getSessionTokenByUserEmail,getCredentials} from "../../db/UsersDb";
 import { ResponseDto } from "../models/ResponseDtoI";
 import { generateRadomSalt, hashPassword,verifyPassword, generateToken,isTokenExpired } from "../../helpers/TokenHelper"
 
@@ -47,6 +47,7 @@ async function serviceRegister(email: string, password: string, username: string
         return response
 }
 
+
 async function login( email: string, password: string){
     let messageTokenInvlid = '';
 
@@ -59,7 +60,7 @@ async function login( email: string, password: string){
         return responseDto;
     }
 
-    let userWithCrendentials = await getUserByEmail(email);
+    let userWithCrendentials = await getUserWithCredentials(email);
 
     if(!userWithCrendentials || !userWithCrendentials.authentication){
         let responseDto : ResponseDto = {
@@ -70,22 +71,31 @@ async function login( email: string, password: string){
         return responseDto;
     };
     
-    const passwordFromDb = findUserByEmail(email).then((user) => user!.authentication!.password);
-    console.log(passwordFromDb);    
 
+    if (!userWithCrendentials || !userWithCrendentials.authentication) {
+        let responseDto: ResponseDto = {
+            status: '403',
+            error: true,
+            message: 'Invalid password'
+        }
+        return responseDto;
+    }
 
-    const passwordValid = await verifyPassword(password, passwordFromDb);
-    const token = userWithCrendentials.authentication!.sessionToken?.toString() || '';
-    const isValid = isTokenExpired(token);
+    const passwordValid = await verifyPassword(password, userWithCrendentials.authentication.password!);
 
-    if(!passwordValid){
-        let responseDto : ResponseDto = {
+    if (!passwordValid) {
+        let responseDto: ResponseDto = {
             status: '403',
             error: true,
             message: 'Invalid password'
         }
         return responseDto;
     };
+
+
+    const token = await getSessionTokenByUserEmail(email).then((user: any) => user.authentication.sessionToken);
+    const isValid = isTokenExpired(token);
+
 
     if (!isValid) {
         let newSessionToken = generateToken({ email, salt: userWithCrendentials.authentication!.salt });
@@ -97,7 +107,7 @@ async function login( email: string, password: string){
         status: '200',
         error: false,
         message: messageTokenInvlid,
-        token: userWithCrendentials!.authentication!.sessionToken!.toString()
+        token: token
     }
     return responseDto;
 
@@ -128,16 +138,14 @@ async function updateSessionToken(email:string, newSessionToken:string) {
       throw error;
     }
 }
-export async function findUserByEmail(email: string): Promise<any | null> {
+
+async function getUserWithCredentials(email: string) {
     try {
-      // Find user by email, excluding the password field
-      const user = await findOne({ email }).select('-authentication.password');
-  
-      // Return the user object (without password) or null if not found
-      return user;
+      const authentication = await getCredentials(email);
+      return authentication;
     } catch (error) {
-      console.error('Error finding user by email:', error);
-      return null;
+      console.error('Erro ao buscar credenciais:', error);
+      throw error;
     }
   }
 
