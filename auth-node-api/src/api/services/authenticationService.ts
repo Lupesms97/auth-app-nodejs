@@ -116,6 +116,14 @@ async function login( email: string, password: string){
 
 
 }
+async function  getUser(){
+    return {
+        status: '200',
+        error: false,
+        message: 'User found'
+    }
+
+}
 
 async function updateSessionToken(email:string, newSessionToken:string) {
     try {
@@ -151,5 +159,6 @@ async function getUserWithCredentials(email: string) {
 
 module.exports = {
     serviceRegister,
-    login
+    login,
+    getUser
 }

@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3400;
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
