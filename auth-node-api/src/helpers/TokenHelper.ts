@@ -16,9 +16,16 @@ export const generateToken = (payload: any) => {
     return jsonwebtoken.sign(payload, secret!, { expiresIn: '1h', algorithm: 'HS256' });
 };
 
-export const verifyToken = (token: string) => {
-    return jsonwebtoken.verify(token, secret!);
-};
+export async function verifyToken(token: string): Promise<JwtPayload | null> {
+    try {
+      const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+      console.log('Token verified successfully:', decoded);
+      return decoded;
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      return null;
+    }
+  }
 
 export const decodeToken = (token: string) => {
     return jsonwebtoken.decode(token);
@@ -54,7 +61,6 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     const isMatch = await bcrypt.compare(password, hashedPassword);
-    console.log(isMatch);
     return isMatch;
 }
   

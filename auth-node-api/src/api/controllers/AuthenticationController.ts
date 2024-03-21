@@ -66,10 +66,10 @@ export const login = async (req: express.Request, res : express.Response) => {
 
 export const getUser = async (req: express.Request, res: express.Response) => {
     try {
-      
+        
+        const serviceResponse = await autService.getUser();
 
-
-        res.status(Number(200)).json("Finge qque pegou todos os users");
+        res.status(Number(200)).json(serviceResponse);
         
     } catch (error: any) {
         let response: ResponseDto ={

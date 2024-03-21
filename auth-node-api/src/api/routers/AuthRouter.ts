@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { register, login,getUser } from '../controllers/AuthenticationController';
-import { isAuthenticathed } from '../middlewares/Authentication';
+import { isAuthenticathed } from '../middlewares';
 
 export default (router:express.Router)=>{
     router.post('/auth/register', register)
