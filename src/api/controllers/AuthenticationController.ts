@@ -1,5 +1,5 @@
 import express from "express";
-import { ResponseDto } from "../models/ResponseDtoI";
+import { ResponseDto } from "../models/response.dto";
 import dotenv from 'dotenv'
 
 dotenv.config()

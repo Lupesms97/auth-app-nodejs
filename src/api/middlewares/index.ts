@@ -1,7 +1,13 @@
 import express from 'express';
 import { verifyToken } from '../../helpers/TokenHelper';
-import { getUserByEmail, getUserBySessionToken } from "../../db/UsersDb";
 import {merge, get, identity} from 'lodash';
+import { decode } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
+import IUserRepository from '../../domain/repositories/user.repository';
+import { container } from '../../di/container';
+import { Types } from '../../di/types';
+
+const userRespository: IUserRepository = container.get<IUserRepository>(Types.IUserRepository);
 
 
 export const isAuthenticathed = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -22,15 +28,15 @@ export const isAuthenticathed = async (req: express.Request, res: express.Respon
         }
 
         const decoded = await verifyToken(accessToken);
-    
-        if(!decoded){
-            return res.status(401).json({status: '401', error: true, message: 'Invalid Token'});
-        }
-    
-        const user = await getUserByEmail(get(decoded, 'email'));
 
-        if(!user){
-            return res.status(401).json({status: '401', error: true, message: 'User Not Found'});
+        if (typeof decoded === 'string') {
+            return res.status(401).json({ status: '401', error: true, message: decoded });
+        }
+
+        const user = await userRespository.getUserByEmail(get(decoded, 'email'));
+
+        if (!user) {
+            return res.status(401).json({ status: '401', error: true, message: 'User Not Found' });
         }
     
         merge(req, {identity: user});

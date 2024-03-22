@@ -4,8 +4,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import {createConnectionDB} from './config/DbConfig';
-import router from './api/routers/Router';
+import {createConnectionDB} from './config/database.config';
+import router from './api/routers/router';
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -32,4 +32,4 @@ server.listen(PORT, () => {
 
 createConnectionDB();
 
-app.use('/', router())
+app.use('/', router);

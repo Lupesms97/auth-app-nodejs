@@ -1,4 +1,4 @@
-import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
+import jsonwebtoken, { decode, JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 
@@ -13,28 +13,32 @@ if (!secret) {
 }
 
 export const generateToken = (payload: any) => {
-    return jsonwebtoken.sign(payload, secret!, { expiresIn: '1h', algorithm: 'HS256' });
+    const token = jsonwebtoken.sign(payload, secret!, { expiresIn: '1h', algorithm: 'HS256', noTimestamp:false });
+    return token;
 };
 
-export async function verifyToken(token: string): Promise<JwtPayload | null> {
+export async function verifyToken(token: string): Promise<JwtPayload | string> {
     try {
-      const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+      const decoded = jsonwebtoken.verify(token, secret!) as JwtPayload;
       console.log('Token verified successfully:', decoded);
       return decoded;
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error verifying token:', error);
-      return null;
+      return error.message;
     }
-  }
+}
 
 export const decodeToken = (token: string) => {
     return jsonwebtoken.decode(token);
 };
 
-export const isTokenExpired = (token: string) => {
+export const isTokenValid = (token: string): boolean => {
     const decoded = decodeToken(token) as JwtPayload;
     if (decoded && decoded.exp) {
-        return decoded.exp < Date.now() / 1000;
+        const expirationTime = decoded.exp * 1000;
+        const currentTime = Date.now();
+        const timeDifference = expirationTime - currentTime;
+        return timeDifference <= 3600000;
     }
     return true;
 };

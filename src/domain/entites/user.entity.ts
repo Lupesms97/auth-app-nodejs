@@ -1,10 +1,27 @@
+
 export class UserEntity{
+    public id?: string
+    public username: string
+    public email:string
+    public authentication: {
+        password: string,
+        salt: string,
+        sessionToken: string
+    }
+
+
     constructor(
-        public id: string,
-        public email: string,
-        public password: string,
-        public username : string,
-        public salt: string
-    ){}
+    username: string,
+    email:string,
+    authentication: {
+        password: string,
+        salt: string,
+        sessionToken: string
+    }
+    ){
+        this.username = username
+        this.email = email
+        this.authentication = authentication
+    }
 
 }
