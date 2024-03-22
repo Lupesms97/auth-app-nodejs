@@ -34,7 +34,7 @@ export default class UserRepositoryImpl implements IUserRepository{
     async updateOne(filter: Record<string, any>, values: Record<string, any>): Promise<boolean> {
         try {
             const result = await UserModel.updateOne(filter, values);
-            return result.modifiedCount > 0;
+            return result.modifiedCount > 0;// Verifica se algum documento foi modificado
         } catch (error) {
             console.error('Error updating document:', error);
             return false;

@@ -1,14 +1,14 @@
 import express from 'express';
-import { verifyToken } from '../../helpers/TokenHelper';
 import {merge, get, identity} from 'lodash';
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import IUserRepository from '../../domain/repositories/user.repository';
 import { container } from '../../di/container';
 import { Types } from '../../di/types';
+import TokenService from '../services/token.service';
 
 const userRespository: IUserRepository = container.get<IUserRepository>(Types.IUserRepository);
-
+const tokenService: TokenService = container.get<TokenService>(Types.TokenService);
 
 export const isAuthenticathed = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
@@ -27,7 +27,7 @@ export const isAuthenticathed = async (req: express.Request, res: express.Respon
            
         }
 
-        const decoded = await verifyToken(accessToken);
+        const decoded = await tokenService.verifyToken(accessToken);
 
         if (typeof decoded === 'string') {
             return res.status(401).json({ status: '401', error: true, message: decoded });

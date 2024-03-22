@@ -1,5 +1,5 @@
-import { InformationDao } from "api/models/information.dao";
-import { UserEntity } from "domain/entites/user.entity";
+import { InformationDao } from "../../api/models/information.dao";
+import { UserEntity } from "../../domain/entites/user.entity";
 
 export default  interface IUserRepository {
     getUsers(): Promise<UserEntity[]>;

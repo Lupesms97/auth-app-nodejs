@@ -6,7 +6,7 @@ import { AuthenticationDetailsDao } from "../../api/models/authenticationDetails
 import { isAuthenticationDetailsDao } from "../../api/models/authenticationDetails";
 import { inject, injectable } from "inversify";
 import { Types } from "../../di/types";
-import {AuthServiceI} from "../services/auth.serviceI";
+import AuthServiceI from "../services/auth.serviceI";
 
 
 @injectable()
@@ -14,15 +14,20 @@ export default class AuthServiceImpl implements AuthServiceI{
 
 
     constructor(
-        @inject(Types.IUserRepository)
-        private userRepository: IUserRepository,
-        @inject(Types.TokenService)
-        private tokenService: TokenService
-    ) {}
+        @inject(Types.IUserRepository)private userRepository: IUserRepository,
+        @inject(Types.TokenService)private tokenService: TokenService
+    ) {
+        if (!this.userRepository) {
+            throw new Error("UserRepository is not defined. Make sure it is properly injected.");
+        }
+        if (!this.tokenService) {
+            throw new Error("TokenService is not defined. Make sure it is properly injected.");
+        }
+    }
 
 
     async serviceRegister(email: string, password: string, username: string): Promise<ResponseDto>{
-    
+
         if (!username || !email || !password) {
             let responseDto : ResponseDto = {
                 status: '400',
@@ -118,7 +123,7 @@ export default class AuthServiceImpl implements AuthServiceI{
             status: '200',
             error: false,
             message:  verificationReturn.information,
-            token: token
+            token: verificationReturn.token! || token
         }
         return responseDto;
     
@@ -139,20 +144,16 @@ export default class AuthServiceImpl implements AuthServiceI{
     async verifyTokenInformation(email:string, token:string, salt:string): Promise<InformationDao>{
         try {
             const isValid = await this.tokenService.verifyToken(token);
-            
         
-         
-            if (typeof isValid !== 'string') {
-                let newSessionToken = this.tokenService.generateToken({ email,salt })
+            if (typeof isValid == 'string') {
+                let newSessionToken = await this.tokenService.generateToken({ email,salt })
                 const result = await this.userRepository.updateOne(
                     { email: email },
                     { $set: { "authentication.sessionToken": newSessionToken } }
-                  );
-              
-                  // Verifica se a atualização foi bem-sucedida
+                  );              
                   if (result) {
                     console.log('SessionToken atualizado com sucesso.');
-                    const dao : InformationDao = {success: true, information:'SessionToken atualizado com sucesso.'}
+                    const dao : InformationDao = {success: true, token: newSessionToken, information:'SessionToken atualizado com sucesso.'}
                     return dao
                   } else {
                     console.log('Não foi possível atualizar o SessionToken.');

@@ -5,7 +5,7 @@ export const Types = {
     IUserRepository: Symbol.for('IUserRepository'),
 
     // Services
-    AuthService: Symbol.for('AuthService'),
+    AuthServiceI: Symbol.for('AuthServiceI'),
     TokenService: Symbol.for('TokenService'),
 
     // Controllers

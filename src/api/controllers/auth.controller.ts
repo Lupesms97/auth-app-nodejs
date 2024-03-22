@@ -1,22 +1,24 @@
+import { Types } from '../../di/types';
 import { ResponseDto } from '../models/response.dto';
-import AuthService from '../services/authentication.service';
+import AuthServiceI from '../services/auth.serviceI';
 import express from 'express';
 import { inject, injectable } from 'inversify'
 
 @injectable()
 export default class AuthController {
+    constructor(
+        @inject(Types.AuthServiceI) private authService: AuthServiceI
+    ) {
+        if (!this.authService) {
+            throw new Error("AuthService is not defined. Make sure it is properly injected.");
+        }
+    }
 
-  constructor(
-    @inject('AuthService') private authService: AuthService
-  ) { }
 
-
-  async register(req: express.Request, res: express.Response) {
+  register = async (req: express.Request, res: express.Response) => {
 
     try {
       const { email, password, username } = req.body;
-
-
       const serviceResponse = await this.authService.serviceRegister(email, password, username);
       const response: ResponseDto = {
         status: serviceResponse.status,
@@ -28,7 +30,7 @@ export default class AuthController {
 
     } catch (error: any) {
       let response: ResponseDto = {
-        status: 'Server Error - 500 ',
+        status: 'Server Error - 500',
         error: true,
         message: error.toString()
       }
@@ -37,7 +39,7 @@ export default class AuthController {
 
   };
 
-  async login(req: express.Request, res : express.Response){
+   login = async (req: express.Request, res : express.Response) => {
     try {
         const { email, password } = req.body;
 
@@ -68,8 +70,7 @@ export default class AuthController {
 
 }
 
-
-async getUser(req: express.Request, res: express.Response){
+  getUser= async (req: express.Request, res: express.Response)=>{
   try {
       
       const serviceResponse = await this.authService.getUser();

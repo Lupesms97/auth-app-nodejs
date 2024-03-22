@@ -8,7 +8,7 @@ export default class TokenService {
     expiresIn: string ;
 
     constructor() {
-        this.secret = process.env.JWT_SECRET ?? 'Helena090821';
+        this.secret = process.env.JWT_SECRET ?? 'FFUbyEC2M33XM2ce';
         this.expiresIn = process.env.JWT_EXPIRES_IN ?? '1h';
 
 

@@ -1,10 +1,25 @@
 import express from 'express';
-
-import { register, login,getUser } from '../controllers/AuthenticationController';
+import {container} from '../../di/container'
 import { isAuthenticathed } from '../middlewares';
+import AuthController from '../controllers/auth.controller';
+import { Types } from '../../di/types';
 
-export default (router:express.Router)=>{
-    router.post('/auth/register', register)
-    router.post('/auth/login', login)
-    router.get('/auth/user', isAuthenticathed, getUser)
-}
+const authContoller = container.get<AuthController>(Types.AuthController)
+
+const router = express.Router();
+
+router.
+    route('/user/register')
+    .post(authContoller.register)
+
+router.
+    route('/user/login')
+    .post(authContoller.login)
+
+router.
+    route('/user')
+    .get(isAuthenticathed, isAuthenticathed, authContoller.getUser)
+
+export default router;
+    
+
