@@ -2,8 +2,7 @@ import { ResponseDto } from "../models/response.dto";
 import { InformationDao } from "../../api/models/information.dao";
 import IUserRepository from "../../domain/repositories/user.repository";
 import TokenService from "./token.service";
-import { AuthenticationDetailsDao } from "../../api/models/authenticationDetails";
-import { isAuthenticationDetailsDao } from "../../api/models/authenticationDetails";
+import { AuthenticationDetailsDao, isAuthenticationDetailsDao } from "../../api/models/authenticationDetails";
 import { inject, injectable } from "inversify";
 import { Types } from "../../di/types";
 import AuthServiceI from "../services/auth.serviceI";
@@ -50,7 +49,7 @@ export default class AuthServiceImpl implements AuthServiceI{
     
         const salt = this.tokenService.generateRadomSalt(email);
     
-        const user = await this.userRepository.createUser({
+            await this.userRepository.createUser({
                 email,
                 username,
                 authentication:{
@@ -83,18 +82,17 @@ export default class AuthServiceImpl implements AuthServiceI{
         }
     
         let userWithCrendentials = await this.getUserWithCredentials(email);
-    
-        if(!userWithCrendentials || !userWithCrendentials.authentication){
-            let responseDto : ResponseDto = {
+
+        if (!userWithCrendentials?.authentication) {
+            let responseDto: ResponseDto = {
                 status: '500',
                 error: true,
                 message: 'No user with this email found'
             }
             return responseDto;
         };
-        
-    
-        const passwordValid = await this.tokenService.verifyPassword(password, userWithCrendentials.authentication.password!);
+
+        const passwordValid = await this.tokenService.verifyPassword(password, userWithCrendentials.authentication.password);
     
         if (!passwordValid) {
             let responseDto: ResponseDto = {
@@ -106,8 +104,8 @@ export default class AuthServiceImpl implements AuthServiceI{
         };
     
     
-        const token = userWithCrendentials.authentication.sessionToken!;
-        const verificationReturn = await this.verifyTokenInformation(email, token, userWithCrendentials.authentication.salt!);
+        const token = userWithCrendentials.authentication.sessionToken;
+        const verificationReturn = await this.verifyTokenInformation(email, token, userWithCrendentials.authentication.salt);
     
         if(!verificationReturn.success){
             let responseDto: ResponseDto = {
@@ -123,7 +121,7 @@ export default class AuthServiceImpl implements AuthServiceI{
             status: '200',
             error: false,
             message:  verificationReturn.information,
-            token: verificationReturn.token! || token
+            token: verificationReturn.token || token
         }
         return responseDto;
     

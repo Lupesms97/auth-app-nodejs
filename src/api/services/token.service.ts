@@ -1,4 +1,4 @@
-import jsonwebtoken, { decode, JwtPayload } from 'jsonwebtoken';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
 import { injectable } from 'inversify';
 
@@ -23,13 +23,13 @@ export default class TokenService {
 
     
     async generateToken(payload: any): Promise<string> {
-        const token = jsonwebtoken.sign(payload, this.secret!, { expiresIn: '1h', algorithm: 'HS256', noTimestamp:false });
+        const token = jsonwebtoken.sign(payload, this.secret, { expiresIn: '1h', algorithm: 'HS256', noTimestamp:false });
         return token;
     };
     
     async verifyToken(token: string): Promise<JwtPayload | string> {
         try {
-          const decoded = jsonwebtoken.verify(token, this.secret!) as JwtPayload;
+          const decoded = jsonwebtoken.verify(token, this.secret) as JwtPayload;
           console.log('Token verified successfully:', decoded);
           return decoded;
         } catch (error:any) {
@@ -44,7 +44,7 @@ export default class TokenService {
     
     async isTokenValid(token: string): Promise<boolean>{
         const decoded = this.decodeToken(token) as JwtPayload;
-        if (decoded && decoded.exp) {
+        if (decoded?.exp) {
             const expirationTime = decoded.exp * 1000;
             const currentTime = Date.now();
             const timeDifference = expirationTime - currentTime;
@@ -54,7 +54,7 @@ export default class TokenService {
     };
     
     async getTokenFromHeaders(headers: any): Promise<string | null>{
-        if (headers && headers.authorization) {
+        if (headers?.authorization) {
             const parted = headers.authorization.split(' ');
             if (parted.length === 2) {
                 return parted[1];
@@ -64,7 +64,7 @@ export default class TokenService {
     };
     
     async generateRadomSalt(email: string):Promise<string> {
-        return jsonwebtoken.sign(email , this.secret!);
+        return jsonwebtoken.sign(email , this.secret);
     }
     
     async hashPassword(password: string): Promise<string> {

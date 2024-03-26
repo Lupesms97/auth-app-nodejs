@@ -1,7 +1,5 @@
 import express from 'express';
-import {merge, get, identity} from 'lodash';
-import { decode } from 'jsonwebtoken';
-import { JwtPayload } from 'jsonwebtoken';
+import {merge, get} from 'lodash';
 import IUserRepository from '../../domain/repositories/user.repository';
 import { container } from '../../di/container';
 import { Types } from '../../di/types';

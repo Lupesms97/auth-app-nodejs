@@ -48,11 +48,11 @@ export default class AuthController {
             status: serviceResponse.status,
             error: serviceResponse.error,
             message: serviceResponse.message,
-            token: serviceResponse.token || ''
+            token: serviceResponse.token ?? ''
         };
 
         if(serviceResponse.status === '200'){
-            const tokenName = process.env.TOKEN_NAME || '_tk_ur';
+            const tokenName = process.env.TOKEN_NAME ?? '_tk_ur';
             res.cookie(tokenName, serviceResponse.token, { domain: 'localhost',path:'/', httpOnly: true });
         }
 
